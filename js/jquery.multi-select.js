@@ -79,6 +79,42 @@
           that.deselect($(this).data('ms-value'));
         });
 
+        if (action === 'dblclick') {
+          var leftButtonDown = false;
+          $(document).mousedown(function(e){
+              // Left mouse button was pressed, set flag
+              if(e.which === 1) leftButtonDown = true;
+          });
+          $(document).mouseup(function(e){
+              // Left mouse button was released, clear flag
+              if(e.which === 1) leftButtonDown = false;
+          });
+          that.$selectableUl.on('mouseover', '.ms-elem-selectable', function(){
+            if (leftButtonDown) {
+              $(this).addClass('marked');
+            };
+          });
+          that.$selectionUl.on('mouseover', '.ms-elem-selection', function(){
+            if (leftButtonDown) {
+              $(this).addClass('dmarked');
+            };
+          });          
+          that.$selectableUl.on('click', '.ms-elem-selectable', function(){
+            if ($(this).hasClass('marked')) {
+              $(this).removeClass('marked');
+            } else {
+              $(this).addClass('marked');
+            };
+          });
+          that.$selectionUl.on('click', '.ms-elem-selection', function(){
+            if ($(this).hasClass('dmarked')) {
+              $(this).removeClass('dmarked');
+            } else {
+              $(this).addClass('dmarked');
+            };
+          });
+        };
+
         that.activeMouse(that.$selectionUl);
         that.activeKeyboard(that.$selectionUl);
 
@@ -475,6 +511,29 @@
       if (typeof this.options.afterDeselect === 'function') {
         this.options.afterDeselect.call(this, values);
       }
+    },
+
+    'select_marked' : function(){
+      $('li.marked').each(function( index ) {
+        $(this).removeClass('marked');
+        $(this).dblclick();
+      });      
+    },
+
+    'deselect_marked' : function(){
+      $('li.dmarked').each(function( index ) {
+        $(this).removeClass('dmarked');
+        $(this).dblclick();
+      });
+    },
+
+    'unmark' : function(){
+      $('li.marked').each(function( index ) {
+        $(this).removeClass('marked');
+      }); 
+      $('li.dmarked').each(function( index ) {
+        $(this).removeClass('dmarked');
+      });
     },
 
     sanitize: function(value){
